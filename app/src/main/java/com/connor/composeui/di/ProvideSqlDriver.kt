@@ -18,7 +18,7 @@ object ProvideSqlDriver {
     @Provides
     @Singleton
     fun provideSqlDriver(@ApplicationContext context: Context): SqlDriver =
-        AndroidSqliteDriver(Database.Schema, context, "contact.db")
+        AndroidSqliteDriver(Database.Schema, context, "contact.db",)
 
     @Provides
     @Singleton

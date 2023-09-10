@@ -1,0 +1,49 @@
+CREATE TABLE contactEnitity(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    imagePath TEXT
+);
+
+CREATE TABLE childEnitity(
+    contactId INTEGER NOT NULL ,
+    phoneNumber TEXT NOT NULL,
+    email TEXT NOT NULL,
+    FOREIGN KEY (contactId) REFERENCES contactEnitity(id) ON DELETE CASCADE
+);
+
+getContactsWithChildren:
+SELECT * FROM contactEnitity
+LEFT JOIN childEnitity ON contactEnitity.id = childEnitity.contactId;
+
+lastContactId:
+SELECT last_insert_rowid() FROM contactEnitity;
+
+insertChild:
+INSERT OR REPLACE
+INTO childEnitity(contactId,phoneNumber,email)
+VALUES (?, ?, ?);
+
+insertContact:
+INSERT OR REPLACE
+INTO contactEnitity(firstName, lastName, createdAt, imagePath)
+VALUES (?, ?, ?, ?);
+
+getContacts:
+SELECT * FROM contactEnitity ORDER BY firstName ASC;
+
+getRecentContacts:
+SELECT * FROM contactEnitity ORDER BY createdAt DESC LIMIT :amount;
+
+
+deleteContact:
+DELETE FROM contactEnitity WHERE id = :id;
+
+getContactById:
+SELECT * FROM contactEnitity WHERE id = :id;
+
+
+updateBillById:
+UPDATE contactEnitity SET firstName = :name WHERE id = :id;
+

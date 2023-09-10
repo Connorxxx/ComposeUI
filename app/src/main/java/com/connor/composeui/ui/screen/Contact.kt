@@ -3,8 +3,12 @@ package com.connor.composeui.ui.screen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -30,6 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.connor.composeui.models.data.ChildData
+import com.connor.composeui.models.data.ContactData
 import com.connor.composeui.models.event.ContactEvent
 import com.connor.composeui.models.event.HomeEvent
 import com.connor.composeui.models.state.ContactState
@@ -41,44 +49,44 @@ fun Contact(
     vm: ContactViewModel = hiltViewModel(),
     onHomeEvent: (HomeEvent) -> Unit
 ) {
-    val state by vm.state.collectAsState()
-    Column(
-        Modifier.fillMaxSize()
-    ) {
-        ContactList(state, onEvent = vm::onEvent, onHomeEvent = onHomeEvent)
-        ModalSheet(state = state, onEvent = vm::onEvent)
-    }
+    val state by vm.state.collectAsStateWithLifecycle()
+    ContactList(state, onEvent = vm::onEvent, onHomeEvent = onHomeEvent)
+    ModalSheet(state = state, onEvent = vm::onEvent)
 }
 
 @Composable
 fun ContactList(
     state: ContactState,
     onEvent: (ContactEvent) -> Unit,
-    onHomeEvent: (HomeEvent) -> Unit) {
+    onHomeEvent: (HomeEvent) -> Unit
+) {
     Scaffold(
         floatingActionButton = { FabAddContact(onEvent = onHomeEvent) }
     ) {
-        Column(
-            Modifier
-                .padding(it)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+        val lazyListState = rememberLazyListState()
+        LazyColumn(
+            Modifier.padding(it),
+            state = lazyListState
         ) {
-            val lazyListState = rememberLazyListState()
-            LazyColumn(
-                state = lazyListState
-            ) {
-                items(state.contacts) { contact ->
-                    Text(text = "${contact.id} ${contact.firstName} ${contact.lastName}",
-                        Modifier
-                            .padding(25.dp)
-                            .clickable {
-                                onEvent(ContactEvent.OnSheetShow)
-                            })
+            items(state.contacts) { contact ->
+                Spacer(modifier = Modifier
+                    .height(12.dp)
+                    .fillMaxWidth())
+                Card {
+                    Text(
+                        text = "${contact.firstName} ${contact.lastName}",
+                        Modifier.padding(top = 12.dp, bottom = 12.dp)
+                    )
+                    contact.child.forEach { child ->
+                        Text(
+                            text = "${child.phoneNumber} ${child.email}"
+                        )
+                    }
                 }
+
             }
         }
+
     }
 }
 

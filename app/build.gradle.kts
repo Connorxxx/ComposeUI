@@ -75,6 +75,8 @@ dependencies {
     implementation(libs.android.driver)
     implementation(libs.coroutines.extensions)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.kotlinx.collections.immutable)
     ksp(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
