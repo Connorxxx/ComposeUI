@@ -7,6 +7,7 @@ import com.connor.composeui.models.data.ContactData
 fun List<GetContactsWithChildren>.mapToContactData() =
     groupBy {
         ContactData(
+            id = it.id,
             firstName = it.firstName,
             lastName = it.lastName,
             imagePath = it.imagePath

@@ -2,6 +2,8 @@ package com.connor.composeui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.connor.composeui.models.data.ChildData
+import com.connor.composeui.models.data.ContactData
 import com.connor.composeui.models.event.AddContactEvent
 import com.connor.composeui.models.repo.ContactSqlRepository
 import com.connor.composeui.models.state.AddContactState
@@ -25,14 +27,23 @@ class AddContactViewModel @Inject constructor(
         when (event) {
             is AddContactEvent.Save -> {
                 viewModelScope.launch {
-                    val err = _state.value.let { value ->
-                        value.firstName.isNotEmpty() &&
-                            value.lastName.isNotEmpty() &&
-                            value.phones.any { it.isNotEmpty() }
+                    val child = maxOf(_state.value.phones.size,_state.value.emails.size).let {
+                        (0..<it).asIterable().map {i ->
+                            ChildData(
+                                _state.value.phones.getOrElse(i) { "" },
+                                _state.value.emails.getOrElse(i) { "" },
+                                )
+                        }
                     }
-//                    contactSqlRepository.insertContact(event.contact).logCat()
+                    val contact = ContactData(
+                        firstName = _state.value.firstName,
+                        lastName = _state.value.lastName,
+                        imagePath = null,
+                        child = child
+                    )
+                    contactSqlRepository.insertContact(contact).logCat()
                     _state.update {
-                        it.copy(addedContact = err)
+                        it.copy(addedContact = true)
                     }
                 }
             }
@@ -40,7 +51,7 @@ class AddContactViewModel @Inject constructor(
             is AddContactEvent.ChangeFirstName -> {
                 _state.update {
                     it.copy(firstName = event.name,
-                        enable = it.firstName.isNotEmpty())
+                        enable = (event.name.isNotEmpty() && it.phones.any {s -> s.isNotEmpty() }))
                 }
             }
 
@@ -65,7 +76,8 @@ class AddContactViewModel @Inject constructor(
             is AddContactEvent.PhoneTextChange -> {
                 _state.update {
                     it.copy(
-                        phones = it.phones.set(event.position, event.phone)
+                        phones = it.phones.set(event.position, event.phone),
+                        enable = (it.firstName.isNotEmpty() && event.phone.isNotEmpty())
                     )
                 }
             }

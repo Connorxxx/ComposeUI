@@ -1,5 +1,8 @@
 package com.connor.composeui.ui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,9 +38,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.connor.composeui.R
 import com.connor.composeui.models.data.ChildData
 import com.connor.composeui.models.data.ContactData
 import com.connor.composeui.models.event.ContactEvent
@@ -54,6 +65,7 @@ fun Contact(
     ModalSheet(state = state, onEvent = vm::onEvent)
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ContactList(
     state: ContactState,
@@ -66,13 +78,13 @@ fun ContactList(
         val lazyListState = rememberLazyListState()
         LazyColumn(
             Modifier.padding(it),
-            state = lazyListState
+            state = lazyListState,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(state.contacts) { contact ->
-                Spacer(modifier = Modifier
-                    .height(12.dp)
-                    .fillMaxWidth())
-                Card {
+                Card(modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(ContactEvent.OnSheetShow(contact)) }
+                ) {
                     Text(
                         text = "${contact.firstName} ${contact.lastName}",
                         Modifier.padding(top = 12.dp, bottom = 12.dp)
@@ -83,10 +95,8 @@ fun ContactList(
                         )
                     }
                 }
-
             }
         }
-
     }
 }
 
@@ -107,6 +117,35 @@ fun ModalSheet(state: ContactState, onEvent: (ContactEvent) -> Unit) {
             windowInsets = windowInsets,
             modifier = Modifier.fillMaxSize()
         ) {
+            Column {
+                Spacer(modifier = Modifier.height(32.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.icon_person),
+                    contentDescription = null,
+                    alignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .size(120.dp)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+                Text(
+                    text = state.selectContact.firstName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = TextUnit(28f, type = TextUnitType.Sp),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                state.selectContact.child.forEach {
+                    Text(
+                        text = it.phoneNumber,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = TextUnit(28f, type = TextUnitType.Sp),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            Text(text = "${state.selectContact.id}")
             Button(onClick = { onEvent(ContactEvent.OnSheetDismiss) }) {
                 Text(text = "Dismiss")
             }

@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.persistentListOf
 data class ContactState(
     val contacts: List<ContactData> = emptyList(),
     val contact: ContactData? = null,
+    val selectContact: ContactData = ContactData(),
     val isSheetOpen: Boolean = false,
     val isContactSheetOpen: Boolean = false,
     val error: String = "",

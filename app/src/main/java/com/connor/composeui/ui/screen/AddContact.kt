@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,16 +59,6 @@ fun AddContact(
     val state by vm.state.collectAsStateWithLifecycle()
     val onEvent: (AddContactEvent) -> Unit = vm::onEvent
     if (state.addedContact) onHomeEvent(HomeEvent.Back)
-    val childList = arrayListOf(
-        ChildData("123456", "connor@qq.com"),
-        ChildData("111222", "tian@qq.com")
-    )
-    val contact = ContactData(
-        firstName = "Connor${(0..100).random()}",
-        lastName = "Wu",
-        imagePath = null,
-        child = childList
-    )
     LazyColumn(Modifier.fillMaxSize()) {
         item {
             Column(
@@ -120,6 +112,7 @@ fun AddContact(
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.AccountCircle, contentDescription = null) },
                 label = { Text(text = "Phone number") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 12.dp, top = 12.dp)
@@ -144,6 +137,7 @@ fun AddContact(
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
                 label = { Text(text = "Email") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 12.dp, top = 12.dp)
@@ -161,8 +155,8 @@ fun AddContact(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 Card(
-                    onClick = { onEvent(AddContactEvent.Save(contact)) },
-                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+                    onClick = { onEvent(AddContactEvent.Save) },
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
                     elevation = CardDefaults.cardElevation(0.dp),
                     enabled = state.enable,
                     modifier = Modifier

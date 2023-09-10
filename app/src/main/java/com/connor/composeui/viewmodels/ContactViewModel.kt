@@ -38,7 +38,10 @@ class ContactViewModel @Inject constructor(
         when (event) {
             is ContactEvent.OnSheetShow -> {
                 _state.update {
-                    it.copy(isSheetOpen = true)
+                    it.copy(
+                        isSheetOpen = true,
+                        selectContact = event.contactData
+                    )
                 }
             }
 

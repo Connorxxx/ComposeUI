@@ -15,7 +15,8 @@ CREATE TABLE childEnitity(
 
 getContactsWithChildren:
 SELECT * FROM contactEnitity
-LEFT JOIN childEnitity ON contactEnitity.id = childEnitity.contactId;
+LEFT JOIN childEnitity ON contactEnitity.id = childEnitity.contactId
+ORDER BY firstName ASC;
 
 lastContactId:
 SELECT last_insert_rowid() FROM contactEnitity;

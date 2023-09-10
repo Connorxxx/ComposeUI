@@ -1,8 +1,25 @@
 package com.connor.composeui.test
 
+import com.connor.composeui.models.data.ChildData
+import com.connor.composeui.utils.logCat
 import java.io.File
 
 fun main() {
+    val phoneNumbers = listOf("1", "2", "3")
+    val emails = listOf("4", "5", "6", "8","9")
+    maxOf(phoneNumbers.size, emails.size).let {
+        (0..<it).asIterable().map { i ->
+            ChildData(
+                phoneNumbers.getOrElse(i) { "" },
+                emails.getOrElse(i) { "" }
+            )
+        }
+    }.also {
+        println(it)
+    }
+}
+
+fun copyTest() {
     val root = "/Users/lothric/Downloads/test/"
     val test = mutableMapOf(
         File(root + "s/image") to File(root + "d/"),
@@ -49,7 +66,7 @@ fun copyFolders(files: Map<File, File>, progressCallback: (Int) -> Unit) {
             val overallProgress = (copySize.toDouble() / totalSourceSize * 100).toInt()
             progressCallback(overallProgress)
         }
-        File(destination,"about").renameTo(File(destination,"test"))
+        File(destination, "about").renameTo(File(destination, "test"))
     }
 }
 
@@ -57,7 +74,8 @@ fun copyFolders(files: Map<File, File>, progressCallback: (Int) -> Unit) {
 private fun copyFolder(
     source: File,
     destination: File,
-    progressCallback: (Long, Int) -> Unit) {
+    progressCallback: (Long, Int) -> Unit
+) {
     if (!source.exists() || !source.isDirectory) {
         throw IllegalArgumentException("Source must be a valid directory.")
     }

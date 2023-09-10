@@ -4,7 +4,7 @@ import com.connor.ContactEnitity
 import com.connor.composeui.models.data.ContactData
 
 sealed interface ContactEvent {
-    data object OnSheetShow : ContactEvent
+    data class OnSheetShow(val contactData: ContactData) : ContactEvent
     data object OnSheetDismiss : ContactEvent
     data class PhotoPick(val path: String) : ContactEvent
     data object OnAddPhoto : ContactEvent
@@ -14,7 +14,7 @@ sealed interface ContactEvent {
 }
 
 sealed interface AddContactEvent {
-    data class Save(val contact: ContactData) : AddContactEvent
+    data object Save : AddContactEvent
     data class ChangeFirstName(val name: String) : AddContactEvent
     data class ChangeLastName(val name: String) : AddContactEvent
     data object AddPhone : AddContactEvent
